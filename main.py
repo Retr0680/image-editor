@@ -1,93 +1,51 @@
-import os
-import pytesseract
-from PIL import Image, ImageDraw, ImageFont
-import re
-from datetime import datetime, timedelta
+# Create a copy of the image
+new_image = image.copy()
 
-# Constants
-DATE_TIME_PATTERN = r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}"
-DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+# If exact position is requested, use fixed coordinates
+if exact_position:
+    # For the example image, these coordinates work well
+    x, y = 10, image.height - 30
+    width, height = 300, 20
+    actual_font_size = 20
+else:
+    # Use detected coordinates
+    x, y = overlay_info['x'], overlay_info['y']
+    width, height = overlay_info['width'], overlay_info['height']
+    
+    # Use detected or specified font size
+    if font_size and font_size > 0:
+        actual_font_size = font_size
+    else:
+        actual_font_size = overlay_info['font_size']
 
-def extract_date_time(text: str) -> str:
-    """
-    Extracts the date and time from the given text.
+# Sample the background color
+bg_color = sample_background_color(image, x, y, width, height)
 
-    Args:
-        text (str): The text containing the date and time.
+# Create a new image for the updated text area with the background color
+text_area = Image.new('RGB', (width, height), bg_color)
+text_draw = ImageDraw.Draw(text_area)
 
-    Returns:
-        str: The extracted date and time.
-    """
-    match = re.search(DATE_TIME_PATTERN, text)
-    return match.group(0) if match else None
+# Use specified font or default
+try:
+    if font_path:
+        font = ImageFont.truetype(font_path, actual_font_size)
+    else:
+        # Try to use a default system font
+        try:
+            font = ImageFont.truetype("arial.ttf", actual_font_size)
+        except:
+            try:
+                font = ImageFont.truetype("DejaVuSans.ttf", actual_font_size)
+            except:
+                font = ImageFont.load_default()
+except Exception:
+    font = ImageFont.load_default()
 
-def update_date_time(date_time: str) -> str:
-    """
-    Updates the given date and time by adding 1 month, 1 day, and 1 hour.
+# Draw the new date text on the text area
+text_draw.text((0, 0), new_date_str, font=font, fill=(255, 255, 255))  # White text
 
-    Args:
-        date_time (str): The date and time to update.
+# Paste the text area onto the original image
+new_image.paste(text_area, (x, y))
 
-    Returns:
-        str: The updated date and time.
-    """
-    date_time_obj = datetime.strptime(date_time, DATE_TIME_FORMAT)
-    updated_date_time_obj = date_time_obj + timedelta(days=1, hours=1)
-    updated_date_time_obj = updated_date_time_obj.replace(month=(date_time_obj.month + 1) % 12 or 12)
-    return updated_date_time_obj.strftime(DATE_TIME_FORMAT)
-
-def update_text(text: str) -> str:
-    """
-    Updates the date and time in the given text.
-
-    Args:
-        text (str): The text containing the date and time.
-
-    Returns:
-        str: The updated text with the new date and time.
-    """
-    original_date_time = extract_date_time(text)
-    if original_date_time:
-        updated_date_time = update_date_time(original_date_time)
-        return text.replace(original_date_time, updated_date_time)
-    return text
-
-def process_image(image_path: str, output_path: str) -> None:
-    """
-    Processes the given image by updating the date and time using OCR and image processing techniques.
-
-    Args:
-        image_path (str): The path to the input image.
-        output_path (str): The path to the output image.
-    """
-    print(f"Processing {image_path}")
-    image = Image.open(image_path)
-    text = pytesseract.image_to_string(image)
-    updated_text = update_text(text)
-    if updated_text:
-        draw = ImageDraw.Draw(image)
-        font = ImageFont.load_default()
-        draw.text((10, 10), updated_text, font=font)
-    image.save(output_path)
-
-def process_images(input_dir: str, output_dir: str) -> None:
-    """
-    Processes all images in the given input directory and saves the output in the given output directory.
-
-    Args:
-        input_dir (str): The path to the input directory.
-        output_dir (str): The path to the output directory.
-    """
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    for filename in os.listdir(input_dir):
-        if filename.endswith(".jpg") or filename.endswith(".png"):
-            image_path = os.path.join(input_dir, filename)
-            output_path = os.path.join(output_dir, filename)
-            process_image(image_path, output_path)
-
-# Example usage
-input_dir = "input_images"
-output_dir = "output_images"
-process_images(input_dir, output_dir)
+# Save the modified image
+new_image.save(output_path)
