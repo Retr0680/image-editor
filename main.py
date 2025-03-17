@@ -321,6 +321,10 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     # Draw the new date text on the text area
     text_draw.text((0, 0), new_date_str, font=font, fill=(255, 255, 255))  # White text
     
+    # Ensure x and y are integers
+    x = int(x)
+    y = int(y)
+    
     # Paste the text area onto the original image
     new_image.paste(text_area, (x, y))
     
