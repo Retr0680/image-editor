@@ -126,7 +126,8 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     
     draw.rectangle([x, y, x + width, y + height], fill=sample_background_color(image, x, y, width, height))
     
-    text_width, text_height = draw.textsize(new_date_str, font=font)
+    text_bbox = draw.textbbox((0, 0), new_date_str, font=font)
+    text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
     text_x = x + (width - text_width) / 2
     text_y = y + (height - text_height) / 2
     
