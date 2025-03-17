@@ -109,9 +109,9 @@ def sample_background_color(image, x, y, width, height):
     return (0, 0, 0)
 
 def update_image_overlay(image_path, output_path, overlay_info, new_date_str, font_path=None, font_size=None, exact_position=False):
-    """Update the GPS camera overlay in the image without a black background"""
+    """Update the GPS camera overlay in the image without creating a new image area"""
     image = Image.open(image_path)
-    new_image = image.copy()
+    draw = ImageDraw.Draw(image)
     
     if exact_position:
         x, y, width, height, actual_font_size = 10, image.height - 30, 300, 20, 20
@@ -119,19 +119,14 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
         x, y, width, height = overlay_info['x'], overlay_info['y'], overlay_info['width'], overlay_info['height']
         actual_font_size = font_size if font_size and font_size > 0 else int(height * 0.8)  # Calculate font size based on height
     
-    bg_color = sample_background_color(image, x, y, width, height)
-    width, height = int(width), int(height)  # Ensure width and height are integers
-    text_area = Image.new('RGB', (width, height), bg_color)
-    text_draw = ImageDraw.Draw(text_area)
-    
     try:
         font = ImageFont.truetype(font_path, actual_font_size) if font_path else ImageFont.truetype("arial.ttf", actual_font_size)
     except:
         font = ImageFont.load_default()
     
-    text_draw.text((0, 0), new_date_str, font=font, fill=(255, 255, 255))
-    new_image.paste(text_area, (int(x), int(y)))  # Ensure x and y are integers
-    new_image.save(output_path)
+    draw.rectangle([x, y, x + width, y + height], fill=sample_background_color(image, x, y, width, height))
+    draw.text((x, y), new_date_str, font=font, fill=(255, 255, 255))
+    image.save(output_path)
     
     print(f"Updated image: {image_path}")
     print(f"New date overlay: {new_date_str}")
