@@ -88,14 +88,22 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     except:
         font = ImageFont.load_default()
     
-    # Draw the new date text directly on the image without filling the background
-    text_bbox = draw.textbbox((0, 0), new_date_str, font=font)
-    text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
+    # Sample the background color around the text area
+    bg_color = sample_background_color(image, x, y, width, height)
     
-    text_x = x + (width - text_width) / 2
-    text_y = y + (height - text_height) / 2
+    # Create a mask for the text
+    text_mask = Image.new('L', (width, height), 0)
+    mask_draw = ImageDraw.Draw(text_mask)
+    mask_draw.text((0, 0), new_date_str, font=font, fill=255)
     
-    draw.text((text_x, text_y), new_date_str, font=font, fill=(255, 255, 255))
+    # Create an image for the text with the sampled background color
+    text_image = Image.new('RGB', (width, height), bg_color)
+    text_draw = ImageDraw.Draw(text_image)
+    text_draw.text((0, 0), new_date_str, font=font, fill=(255, 255, 255))
+    
+    # Composite the text image onto the original image using the mask
+    image.paste(text_image, (x, y), text_mask)
+    
     image.save(output_path)
     
     print(f"Updated image: {image_path}")
