@@ -125,7 +125,12 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
         font = ImageFont.load_default()
     
     draw.rectangle([x, y, x + width, y + height], fill=sample_background_color(image, x, y, width, height))
-    draw.text((x, y), new_date_str, font=font, fill=(255, 255, 255))
+    
+    text_width, text_height = draw.textsize(new_date_str, font=font)
+    text_x = x + (width - text_width) / 2
+    text_y = y + (height - text_height) / 2
+    
+    draw.text((text_x, text_y), new_date_str, font=font, fill=(255, 255, 255))
     image.save(output_path)
     
     print(f"Updated image: {image_path}")
