@@ -1,7 +1,8 @@
-import re
 import os
+import pytesseract
+from PIL import Image, ImageDraw, ImageFont
+import re
 from datetime import datetime, timedelta
-from PIL import Image
 
 # Constants
 DATE_TIME_PATTERN = r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}"
@@ -18,7 +19,7 @@ def extract_date_time(text: str) -> str:
         str: The extracted date and time.
     """
     match = re.search(DATE_TIME_PATTERN, text)
-    return match.group(1) if match else None
+    return match.group(0) if match else None
 
 def update_date_time(date_time: str) -> str:
     """
@@ -61,8 +62,12 @@ def process_image(image_path: str, output_path: str) -> None:
     """
     print(f"Processing {image_path}")
     image = Image.open(image_path)
-    # Add OCR and image processing logic here
-    # For demonstration purposes, we'll just save the original image
+    text = pytesseract.image_to_string(image)
+    updated_text = update_text(text)
+    if updated_text:
+        draw = ImageDraw.Draw(image)
+        font = ImageFont.load_default()
+        draw.text((10, 10), updated_text, font=font)
     image.save(output_path)
 
 def process_images(input_dir: str, output_dir: str) -> None:
@@ -83,6 +88,6 @@ def process_images(input_dir: str, output_dir: str) -> None:
             process_image(image_path, output_path)
 
 # Example usage
-input_dir = "C:/Users/Retr0/Documents/Retr0/image editor/input"
-output_dir = "C:/Users/Retr0/Documents/Retr0/image editor/output"
+input_dir = "input_images"
+output_dir = "output_images"
 process_images(input_dir, output_dir)
