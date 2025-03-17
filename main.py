@@ -120,6 +120,7 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
         actual_font_size = font_size if font_size and font_size > 0 else overlay_info.get('font_size', 20)
     
     bg_color = sample_background_color(image, x, y, width, height)
+    width, height = int(width), int(height)  # Ensure width and height are integers
     text_area = Image.new('RGB', (width, height), bg_color)
     text_draw = ImageDraw.Draw(text_area)
     
@@ -129,7 +130,7 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
         font = ImageFont.load_default()
     
     text_draw.text((0, 0), new_date_str, font=font, fill=(255, 255, 255))
-    new_image.paste(text_area, (x, y))
+    new_image.paste(text_area, (int(x), int(y)))  # Ensure x and y are integers
     new_image.save(output_path)
 
 def process_images(input_dir, output_dir, font_path=None, font_size=None, exact_position=False):
