@@ -6,7 +6,6 @@ import os
 
 # Function to update the date and time
 def update_datetime(text):
-    # Regex to find date and time in the text
     datetime_pattern = r'\b(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\b'
     match = re.search(datetime_pattern, text)
     if match:
@@ -20,36 +19,41 @@ def update_datetime(text):
 
 # Function to process each image
 def process_image(image_path, output_path):
-    # Open the image
+    print(f"Processing {image_path}")
     image = Image.open(image_path)
     
     # Use OCR to extract text
     text = pytesseract.image_to_string(image)
+    print(f"Extracted text: {text}")
     
     # Update the date and time in the text
     updated_text = update_datetime(text)
+    print(f"Updated text: {updated_text}")
     
     # Draw the updated text on the image
     draw = ImageDraw.Draw(image)
-    font = ImageFont.load_default()  # Use default font or specify a custom font
+    font = ImageFont.load_default()
     draw.text((10, 10), updated_text, font=font, fill="black")
     
     # Save the updated image
     image.save(output_path)
+    print(f"Saved to {output_path}")
 
 # Directory containing the images
-input_dir = 'C:/Users/Retr0/Documents/Retr0/image editor/input'
-output_dir = 'C:/Users/Retr0/Documents/Retr0/image editor/output'
+input_dir = r'C:\Users\Retr0\Documents\Retr0\image editor\input'
+output_dir = r'C:\Users\Retr0\Documents\Retr0\image editor\output'
 
 # Ensure output directory exists
 os.makedirs(output_dir, exist_ok=True)
 
 # Process all images in the directory
 for filename in os.listdir(input_dir):
-    if filename.endswith('.jpg') or filename.endswith('.png'):
+    if filename.lower().endswith(('.jpg', '.jpeg', '.png')):
         input_path = os.path.join(input_dir, filename)
         output_path = os.path.join(output_dir, filename)
         process_image(input_path, output_path)
         print(f'Processed {filename}')
+    else:
+        print(f'Skipping unsupported file: {filename}')
 
 print('All images processed.')
