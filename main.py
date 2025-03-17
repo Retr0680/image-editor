@@ -38,8 +38,8 @@ def process_image(image_path, output_path):
     image.save(output_path)
 
 # Directory containing the images
-input_dir = 'C:\Users\Retr0\Documents\Retr0\image editor\input'
-output_dir = 'C:\Users\Retr0\Documents\Retr0\image editor\output'
+input_dir = 'C:/Users/Retr0/Documents/Retr0/image editor/input'
+output_dir = 'C:/Users/Retr0/Documents/Retr0/image editor/output'
 
 # Ensure output directory exists
 os.makedirs(output_dir, exist_ok=True)
