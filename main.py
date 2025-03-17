@@ -93,6 +93,10 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     # Sample the background color around the text area
     bg_color = sample_background_color(image, x, y, width, height)
     
+    # Ensure bg_color is a tuple of three elements (RGB)
+    if len(bg_color) == 4:
+        bg_color = bg_color[:3]
+    
     # Create a mask for the text
     text_mask = Image.new('L', (width, height), 0)
     mask_draw = ImageDraw.Draw(text_mask)
