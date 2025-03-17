@@ -1,4 +1,5 @@
 import re
+import os
 from datetime import datetime, timedelta
 from PIL import Image
 
@@ -64,7 +65,24 @@ def process_image(image_path: str, output_path: str) -> None:
     # For demonstration purposes, we'll just save the original image
     image.save(output_path)
 
+def process_images(input_dir: str, output_dir: str) -> None:
+    """
+    Processes all images in the given input directory and saves the output in the given output directory.
+
+    Args:
+        input_dir (str): The path to the input directory.
+        output_dir (str): The path to the output directory.
+    """
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    for filename in os.listdir(input_dir):
+        if filename.endswith(".jpg") or filename.endswith(".png"):
+            image_path = os.path.join(input_dir, filename)
+            output_path = os.path.join(output_dir, filename)
+            process_image(image_path, output_path)
+
 # Example usage
-image_path = "input_image.jpg"
-output_path = "output_image.jpg"
-process_image(image_path, output_path)
+input_dir = "input_images"
+output_dir = "output_images"
+process_images(input_dir, output_dir)
