@@ -97,6 +97,7 @@ def parse_and_adjust_date(date_str):
 def sample_background_color(image, x, y, width, height):
     """Sample the background color around the text area"""
     img_array = np.array(image)
+    x, y, width, height = int(x), int(y), int(width), int(height)  # Ensure indices are integers
     samples = []
     if y > 5: samples.extend(img_array[y-5:y, x:x+width].reshape(-1, 3))
     if y + height + 5 < img_array.shape[0]: samples.extend(img_array[y+height:y+height+5, x:x+width].reshape(-1, 3))
