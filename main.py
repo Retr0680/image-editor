@@ -66,8 +66,10 @@ def sample_background_color(image, x, y, width, height):
     img_array = np.array(image)
     x, y, width, height = int(x), int(y), int(width), int(height)
     samples = []
-    if y > 5: samples.extend(img_array[y-5:y, x:x+width].reshape(-1, 3))
-    if y + height + 5 < img_array.shape[0]: samples.extend(img_array[y+height:y+height+5, x:x+width].reshape(-1, 3))
+    if y > 5 and y < img_array.shape[0]:
+        samples.extend(img_array[y-5:y, x:x+width].reshape(-1, 3))
+    if y + height + 5 < img_array.shape[0]:
+        samples.extend(img_array[y+height:y+height+5, x:x+width].reshape(-1, 3))
     sample_tuples = [tuple(sample) for sample in samples]
     if sample_tuples:
         color_counts = {color: sample_tuples.count(color) for color in set(sample_tuples)}
@@ -105,6 +107,8 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     text_image_with_mask = Image.composite(text_image, image.crop((x, y, x + width, y + height)), text_mask)
     image.paste(text_image_with_mask, (x, y))
     
+    # Convert back to RGB mode before saving as JPEG
+    image = image.convert("RGB")
     image.save(output_path)
     
     print(f"Updated image: {image_path}")
