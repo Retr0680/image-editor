@@ -104,6 +104,12 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     # Composite the text image onto the original image using the mask
     image.paste(text_image, (x, y), text_mask)
     
+    # Draw a rectangle over the original text area to cover it
+    draw.rectangle([x, y, x + width, y + height], fill=bg_color)
+    
+    # Draw the new date text on the image
+    draw.text((x, y), new_date_str, font=font, fill=(255, 255, 255))
+    
     image.save(output_path)
     
     print(f"Updated image: {image_path}")
