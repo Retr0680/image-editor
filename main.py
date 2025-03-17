@@ -72,32 +72,14 @@ def find_gps_date_overlay(image_path):
             # Adjust y-coordinate to account for the crop
             y += image.height * 0.7
             
-            # Manually find the date in the image
-            img_array = np.array(image)
-            height, width, _ = img_array.shape
-            
-            # Take a precise crop from the bottom of the image where the date is likely to be
-            bottom_crop = img_array[int(height * 0.95):height, :, :]
-            
-            # Convert to PIL Image for OCR
-            bottom_img = Image.fromarray(bottom_crop)
-            precise_text = pytesseract.image_to_string(bottom_img)
-            
-            print("Text from precise bottom crop:")
-            print(precise_text)
-            
-            date_match = re.search(date_pattern, precise_text)
-            if date_match:
-                date_str = date_match.group(0)
-                return {
-                    'date_str': date_str,
-                    'x': 0,  # Assuming date is at the left edge
-                    'y': int(height * 0.95),  # Bottom of the image
-                    'width': width,
-                    'height': int(height * 0.05),
-                    'font_size': int(height * 0.03),  # Estimated font size
-                    'color': (255, 255, 255)  # Default white color for overlay text
-                }
+            return {
+                'date_str': ' '.join([comp['text'] for comp in date_components]),
+                'x': x,
+                'y': y,
+                'width': width,
+                'height': height,
+                'font_size': height
+            }
     else:
         date_str = match.group(0)
         
@@ -130,8 +112,7 @@ def find_gps_date_overlay(image_path):
                 'y': y_min,
                 'width': x_max - x_min,
                 'height': y_max - y_min,
-                'font_size': y_max - y_min,
-                'color': (255, 255, 255)  # Default white color for overlay text
+                'font_size': y_max - y_min
             }
     
     # If we can't find the date with OCR, use a fixed position
@@ -142,8 +123,7 @@ def find_gps_date_overlay(image_path):
         'y': image.height - 30,
         'width': 300,
         'height': 20,
-        'font_size': 20,
-        'color': (255, 255, 255)  # Default white color for overlay text
+        'font_size': 20
     }
 
 def parse_and_adjust_date(date_str):
@@ -171,40 +151,12 @@ def parse_and_adjust_date(date_str):
         dt = datetime(year, month, day, hour, minute)
         
         # Add 1 month, 1 day, and 1 hour
-        new_month = month + 1
-        new_year = year
-        if new_month > 12:
-            new_month = 1
-            new_year += 1
-        
-        # Handle month length differences
-        days_in_new_month = 31  # Default max
-        if new_month in [4, 6, 9, 11]:
-            days_in_new_month = 30
-        elif new_month == 2:
-            if (new_year % 4 == 0 and new_year % 100 != 0) or (new_year % 400 == 0):
-                days_in_new_month = 29  # Leap year
-            else:
-                days_in_new_month = 28
-        
-        new_day = day + 1
-        if new_day > days_in_new_month:
-            new_day = 1
-            new_month += 1
-            if new_month > 12:
-                new_month = 1
-                new_year += 1
-        
-        new_hour = hour + 1
-        if new_hour >= 24:
-            new_hour = new_hour - 24
-            new_day += 1
-            if new_day > days_in_new_month:
-                new_day = 1
-                new_month += 1
-                if new_month > 12:
-                    new_month = 1
-                    new_year += 1
+        new_dt = dt + timedelta(days=1, hours=1)
+        new_month = new_dt.month
+        new_year = new_dt.year
+        new_day = new_dt.day
+        new_hour = new_dt.hour
+        new_minute = new_dt.minute
         
         # Format back to the original format
         new_year_str = str(new_year % 100).zfill(2)  # Convert back to YY format
@@ -219,7 +171,7 @@ def parse_and_adjust_date(date_str):
         if display_hour == 0:
             display_hour = 12
         
-        new_date_str = f"{new_day:02d}/{new_month:02d}/{new_year_str} {display_hour}:{minute:02d} {new_am_pm} GMT {tz_sign}{tz_hour}:{tz_minute}"
+        new_date_str = f"{new_day:02d}/{new_month:02d}/{new_year_str} {display_hour}:{new_minute:02d} {new_am_pm} GMT {tz_sign}{tz_hour}:{tz_minute}"
         
         return new_date_str
     
