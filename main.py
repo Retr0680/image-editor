@@ -8,8 +8,8 @@ import numpy as np
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Update GPS camera date overlay by adding 1 month, 1 day, and 1 hour')
-    parser.add_argument('--input', type=str, required=True, help='Input image file')
-    parser.add_argument('--output', type=str, required=True, help='Output image file')
+    parser.add_argument('--input_dir', type=str, required=True, help='Input directory containing image files')
+    parser.add_argument('--output_dir', type=str, required=True, help='Output directory to save processed images')
     parser.add_argument('--font_path', type=str, help='Path to font file for text rendering')
     parser.add_argument('--font_size', type=int, default=0, help='Font size (0 for auto-detection)')
     parser.add_argument('--exact_position', action='store_true', help='Use exact position for date replacing')
@@ -317,38 +317,49 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     # Save the modified image
     new_image.save(output_path)
 
+def process_images(input_dir, output_dir, font_path=None, font_size=None, exact_position=False):
+    """Process all images in the input directory and save them to the output directory"""
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    
+    for filename in os.listdir(input_dir):
+        if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+            input_path = os.path.join(input_dir, filename)
+            output_path = os.path.join(output_dir, filename)
+            
+            # Find the GPS camera overlay
+            overlay_info = find_gps_date_overlay(input_path)
+            
+            if overlay_info:
+                print(f"Found date overlay in {filename}: {overlay_info['date_str']}")
+                
+                # Parse and adjust the date
+                new_date_str = parse_and_adjust_date(overlay_info['date_str'])
+                
+                if not new_date_str:
+                    # If parsing failed, use a fixed format
+                    new_date_str = "22/11/24 2:51 PM GMT +05:30"  # Example adjusted date
+                
+                print(f"Updated date for {filename}: {new_date_str}")
+                
+                # Update the image
+                update_image_overlay(
+                    input_path,
+                    output_path,
+                    overlay_info,
+                    new_date_str,
+                    font_path,
+                    font_size,
+                    exact_position
+                )
+                
+                print(f"Successfully updated {filename} and saved to {output_path}")
+            else:
+                print(f"No GPS camera date overlay found in {filename}.")
+
 def main():
     args = parse_args()
-    
-    # Find the GPS camera overlay
-    overlay_info = find_gps_date_overlay(args.input)
-    
-    if overlay_info:
-        print(f"Found date overlay: {overlay_info['date_str']}")
-        
-        # Parse and adjust the date
-        new_date_str = parse_and_adjust_date(overlay_info['date_str'])
-        
-        if not new_date_str:
-            # If parsing failed, use a fixed format
-            new_date_str = "22/11/24 2:51 PM GMT +05:30"  # Example adjusted date
-        
-        print(f"Updated date: {new_date_str}")
-        
-        # Update the image
-        update_image_overlay(
-            args.input,
-            args.output,
-            overlay_info,
-            new_date_str,
-            args.font_path,
-            args.font_size,
-            args.exact_position
-        )
-        
-        print(f"Successfully updated image and saved to {args.output}")
-    else:
-        print("No GPS camera date overlay found in the image.")
+    process_images(args.input_dir, args.output_dir, args.font_path, args.font_size, args.exact_position)
 
 if __name__ == "__main__":
     main()
