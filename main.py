@@ -27,6 +27,7 @@ def update_datetime(text):
         updated_dt = updated_dt.replace(month=dt.month + 1)
         updated_datetime = updated_dt.strftime('%d/%m/%Y %I:%M%p GMT%z')
         text = text.replace(original_datetime, updated_datetime)
+        print(f"Updated text: {text}")
     return text
 
 # Function to process each image
@@ -45,6 +46,7 @@ def process_image(image_path, output_path):
     for i in range(len(ocr_data['text'])):
         text = ocr_data['text'][i]
         if text.strip():
+            print(f"Extracted text: {text}")
             updated_text = update_datetime(text)
             if updated_text != text:
                 x, y, w, h = ocr_data['left'][i], ocr_data['top'][i], ocr_data['width'][i], ocr_data['height'][i]
