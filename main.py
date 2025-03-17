@@ -294,6 +294,10 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     # Sample the background color
     bg_color = sample_background_color(image, x, y, width, height)
     
+    # Ensure width and height are integers
+    width = int(width)
+    height = int(height)
+    
     # Create a new image for the updated text area with the background color
     text_area = Image.new('RGB', (width, height), bg_color)
     text_draw = ImageDraw.Draw(text_area)
