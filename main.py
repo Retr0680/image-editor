@@ -88,8 +88,7 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     except:
         font = ImageFont.load_default()
     
-    draw.rectangle([x, y, x + width, y + height], fill=sample_background_color(image, x, y, width, height))
-    
+    # Draw the new date text directly on the image without filling the background
     text_bbox = draw.textbbox((0, 0), new_date_str, font=font)
     text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
     
