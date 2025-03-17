@@ -117,7 +117,7 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
         x, y, width, height, actual_font_size = 10, image.height - 30, 300, 20, 20
     else:
         x, y, width, height = overlay_info['x'], overlay_info['y'], overlay_info['width'], overlay_info['height']
-        actual_font_size = font_size if font_size and font_size > 0 else overlay_info.get('font_size', 20)
+        actual_font_size = font_size if font_size and font_size > 0 else int(height * 0.8)  # Calculate font size based on height
     
     bg_color = sample_background_color(image, x, y, width, height)
     width, height = int(width), int(height)  # Ensure width and height are integers
@@ -136,6 +136,7 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     print(f"Updated image: {image_path}")
     print(f"New date overlay: {new_date_str}")
     print(f"Overlay position: ({x}, {y}), size: ({width}, {height})")
+    print(f"Font size: {actual_font_size}")
     print(f"Saved to: {output_path}")
 
 def process_images(input_dir, output_dir, font_path=None, font_size=None, exact_position=False):
