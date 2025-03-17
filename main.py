@@ -132,26 +132,16 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     text_draw.text((0, 0), new_date_str, font=font, fill=(255, 255, 255))
     new_image.paste(text_area, (int(x), int(y)))  # Ensure x and y are integers
     new_image.save(output_path)
+    
+    print(f"Updated image: {image_path}")
+    print(f"New date overlay: {new_date_str}")
+    print(f"Overlay position: ({x}, {y}), size: ({width}, {height})")
+    print(f"Saved to: {output_path}")
 
 def process_images(input_dir, output_dir, font_path=None, font_size=None, exact_position=False):
     """Process all images in the input directory and save them to the output directory"""
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-    
-    total_x, total_y, total_width, total_height, count = 0, 0, 0, 0, 0
-    
-    for filename in os.listdir(input_dir):
-        if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
-            input_path = os.path.join(input_dir, filename)
-            overlay_info = find_gps_date_overlay(input_path)
-            if overlay_info:
-                total_x += overlay_info['x']
-                total_y += overlay_info['y']
-                total_width += overlay_info['width']
-                total_height += overlay_info['height']
-                count += 1
-    
-    avg_x, avg_y, avg_width, avg_height = (total_x // count, total_y // count, total_width // count, total_height // count) if count > 0 else (10, 10, 300, 20)
     
     for filename in os.listdir(input_dir):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
@@ -160,8 +150,8 @@ def process_images(input_dir, output_dir, font_path=None, font_size=None, exact_
             overlay_info = find_gps_date_overlay(input_path)
             if overlay_info:
                 new_date_str = parse_and_adjust_date(overlay_info['date_str']) or "22/11/24 2:51 PM GMT +05:30"
-                overlay_info.update({'x': avg_x, 'y': avg_y, 'width': avg_width, 'height': avg_height})
                 update_image_overlay(input_path, output_path, overlay_info, new_date_str, font_path, font_size, exact_position)
+                print(f"Processed image: {filename}")
 
 def main():
     args = parse_args()
