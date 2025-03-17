@@ -18,14 +18,14 @@ def update_datetime(text):
     Returns:
         str: The updated text with the new date and time.
     """
-    datetime_pattern = r'\b(\d{2}/\d{2}/\d{4} \d{2}:\d{2}[AP]M GMT\+\d{2}:\d{2})\b'
+    datetime_pattern = r'\b(\d{2}/\d{2}/\d{2} \d{2}:\d{2} [AP]M GMT\+\d{2}:\d{2})\b'
     match = re.search(datetime_pattern, text)
     if match:
         original_datetime = match.group(1)
-        dt = datetime.strptime(original_datetime, '%d/%m/%Y %I:%M%p GMT%z')
+        dt = datetime.strptime(original_datetime, '%d/%m/%y %I:%M %p GMT%z')
         updated_dt = dt + timedelta(days=1, hours=1)
         updated_dt = updated_dt.replace(month=dt.month + 1)
-        updated_datetime = updated_dt.strftime('%d/%m/%Y %I:%M%p GMT%z')
+        updated_datetime = updated_dt.strftime('%d/%m/%y %I:%M %p GMT%z')
         text = text.replace(original_datetime, updated_datetime)
         print(f"Updated text: {text}")
     return text
