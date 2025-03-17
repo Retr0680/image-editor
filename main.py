@@ -11,7 +11,7 @@ def parse_args():
     parser.add_argument('--input_dir', type=str, required=True, help='Input directory containing image files')
     parser.add_argument('--output_dir', type=str, required=True, help='Output directory to save processed images')
     parser.add_argument('--font_path', type=str, help='Path to font file for text rendering')
-    parser.add_argument('--font_size', type=int, default=0, help='Font size (0 for auto-detection)')
+    parser.add_argument('--font_size', type=int, default=20, help='Font size (default is 20)')
     parser.add_argument('--exact_position', action='store_true', help='Use exact position for date replacing')
     return parser.parse_args()
 
@@ -74,18 +74,17 @@ def sample_background_color(image, x, y, width, height):
         return max(color_counts.items(), key=lambda x: x[1])[0]
     return (0, 0, 0)
 
-def update_image_overlay(image_path, output_path, overlay_info, new_date_str, font_path=None, font_size=None, exact_position=False):
+def update_image_overlay(image_path, output_path, overlay_info, new_date_str, font_path=None, font_size=20, exact_position=False):
     image = Image.open(image_path)
     draw = ImageDraw.Draw(image)
     
     if exact_position:
-        x, y, width, height, actual_font_size = 10, image.height - 30, 300, 20, 20
+        x, y, width, height = 10, image.height - 30, 300, 20
     else:
         x, y, width, height = overlay_info['x'], overlay_info['y'], overlay_info['width'], overlay_info['height']
-        actual_font_size = font_size if font_size and font_size > 0 else int(height * 0.8)
     
     try:
-        font = ImageFont.truetype(font_path, actual_font_size) if font_path else ImageFont.truetype("arial.ttf", actual_font_size)
+        font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.truetype("arial.ttf", font_size)
     except:
         font = ImageFont.load_default()
     
@@ -93,16 +92,6 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     
     text_bbox = draw.textbbox((0, 0), new_date_str, font=font)
     text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
-    
-    # Adjust font size if text is too large
-    while text_width > width or text_height > height:
-        actual_font_size -= 1
-        try:
-            font = ImageFont.truetype(font_path, actual_font_size) if font_path else ImageFont.truetype("arial.ttf", actual_font_size)
-        except:
-            font = ImageFont.load_default()
-        text_bbox = draw.textbbox((0, 0), new_date_str, font=font)
-        text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
     
     text_x = x + (width - text_width) / 2
     text_y = y + (height - text_height) / 2
@@ -113,10 +102,10 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     print(f"Updated image: {image_path}")
     print(f"New date overlay: {new_date_str}")
     print(f"Overlay position: ({x}, {y}), size: ({width}, {height})")
-    print(f"Font size: {actual_font_size}")
+    print(f"Font size: {font_size}")
     print(f"Saved to: {output_path}")
 
-def process_images(input_dir, output_dir, font_path=None, font_size=None, exact_position=False):
+def process_images(input_dir, output_dir, font_path=None, font_size=20, exact_position=False):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     for filename in os.listdir(input_dir):
