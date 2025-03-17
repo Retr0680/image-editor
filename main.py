@@ -83,6 +83,6 @@ def process_images(input_dir: str, output_dir: str) -> None:
             process_image(image_path, output_path)
 
 # Example usage
-input_dir = "input_images"
-output_dir = "output_images"
+input_dir = "C:\Users\Retr0\Documents\Retr0\image editor\input"
+output_dir = "C:\Users\Retr0\Documents\Retr0\image editor\output"
 process_images(input_dir, output_dir)
