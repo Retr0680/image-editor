@@ -67,9 +67,9 @@ def sample_background_color(image, x, y, width, height):
     x, y, width, height = int(x), int(y), int(width), int(height)
     samples = []
     if y > 5 and y < img_array.shape[0]:
-        samples.extend(img_array[y-5:y, x:x+width].reshape(-1, 3))
+        samples.extend(img_array[y-5:y, x:x+width].reshape(-1, img_array.shape[2]))
     if y + height + 5 < img_array.shape[0]:
-        samples.extend(img_array[y+height:y+height+5, x:x+width].reshape(-1, 3))
+        samples.extend(img_array[y+height:y+height+5, x:x+width].reshape(-1, img_array.shape[2]))
     sample_tuples = [tuple(sample) for sample in samples]
     if sample_tuples:
         color_counts = {color: sample_tuples.count(color) for color in set(sample_tuples)}
