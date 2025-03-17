@@ -81,7 +81,7 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     draw = ImageDraw.Draw(image)
     
     if exact_position:
-        x, y, width, height = 10, image.height - 30, 300, 20
+        x, y, width, height = overlay_info['x'], overlay_info['y'], overlay_info['width'], overlay_info['height']
     else:
         x, y, width, height = overlay_info['x'], overlay_info['y'], overlay_info['width'], overlay_info['height']
     
