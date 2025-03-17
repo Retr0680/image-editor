@@ -289,6 +289,34 @@ def process_images(input_dir, output_dir, font_path=None, font_size=None, exact_
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     
+    # Variables to store the average position and size
+    total_x, total_y, total_width, total_height, count = 0, 0, 0, 0, 0
+    
+    # First pass: calculate average position and size
+    for filename in os.listdir(input_dir):
+        if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+            input_path = os.path.join(input_dir, filename)
+            
+            # Find the GPS camera overlay
+            overlay_info = find_gps_date_overlay(input_path)
+            
+            if overlay_info:
+                total_x += overlay_info['x']
+                total_y += overlay_info['y']
+                total_width += overlay_info['width']
+                total_height += overlay_info['height']
+                count += 1
+    
+    # Calculate average position and size
+    if count > 0:
+        avg_x = total_x // count
+        avg_y = total_y // count
+        avg_width = total_width // count
+        avg_height = total_height // count
+    else:
+        avg_x, avg_y, avg_width, avg_height = 10, 10, 300, 20  # Default values
+    
+    # Second pass: update images with average position and size
     for filename in os.listdir(input_dir):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
             input_path = os.path.join(input_dir, filename)
@@ -308,6 +336,12 @@ def process_images(input_dir, output_dir, font_path=None, font_size=None, exact_
                     new_date_str = "22/11/24 2:51 PM GMT +05:30"  # Example adjusted date
                 
                 print(f"Updated date for {filename}: {new_date_str}")
+                
+                # Update the image with average position and size
+                overlay_info['x'] = avg_x
+                overlay_info['y'] = avg_y
+                overlay_info['width'] = avg_width
+                overlay_info['height'] = avg_height
                 
                 # Update the image
                 update_image_overlay(
