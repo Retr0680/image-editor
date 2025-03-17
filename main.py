@@ -230,6 +230,12 @@ def sample_background_color(image, x, y, width, height):
     # Convert to numpy array for easier manipulation
     img_array = np.array(image)
     
+    # Ensure slice indices are integers
+    x = int(x)
+    y = int(y)
+    width = int(width)
+    height = int(height)
+    
     # Get the background color from the area around the text
     # Take samples from above and below the text area
     samples = []
