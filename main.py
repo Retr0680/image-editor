@@ -241,8 +241,8 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
         if font_size and font_size > 0:
             actual_font_size = font_size
         else:
-            # Calculate font size proportionally to the overlay height
-            actual_font_size = int(height * 0.8)
+            # Use the detected font size or a default value
+            actual_font_size = overlay_info.get('font_size', 20)
     
     # Sample the background color
     bg_color = sample_background_color(image, x, y, width, height)
