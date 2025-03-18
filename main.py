@@ -80,9 +80,10 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     image = Image.open(image_path).convert("RGBA")
     draw = ImageDraw.Draw(image)
     
-    # Use the fixed overlay position and font size
-    x, y, width, height = 261, 723, 357, 22
-    font_size = 20
+    if exact_position:
+        x, y, width, height = overlay_info['x'], overlay_info['y'], overlay_info['width'], overlay_info['height']
+    else:
+        x, y, width, height = overlay_info['x'], overlay_info['y'], overlay_info['width'], overlay_info['height']
     
     try:
         font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.truetype("arial.ttf", font_size)
@@ -104,7 +105,11 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     overlay_draw.rectangle([x, y, x + width, y + height], fill=(*bg_color, 255))
     
     # Draw the new date text on the overlay
-    overlay_draw.text((x, y), new_date_str, font=font, fill=(255, 255, 255, 255))
+    text_bbox = overlay_draw.textbbox((0, 0), new_date_str, font=font)
+    text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
+    text_x = x + (width - text_width) / 2
+    text_y = y + (height - text_height) / 2
+    overlay_draw.text((text_x, text_y), new_date_str, font=font, fill=(255, 255, 255, 255))
     
     # Composite the overlay with the original image
     image = Image.alpha_composite(image, overlay)
