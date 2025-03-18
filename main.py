@@ -76,7 +76,7 @@ def sample_background_color(image, x, y, width, height):
         return max(color_counts.items(), key=lambda x: x[1])[0]
     return (0, 0, 0)
 
-def update_image_overlay(image_path, output_path, overlay_info, new_date_str, font_path=None, font_size=20, exact_position=False):
+def update_image_overlay(image_path, output_path, overlay_info, new_date_str, font_path=None, exact_position=False):
     image = Image.open(image_path).convert("RGBA")
     draw = ImageDraw.Draw(image)
     
@@ -86,6 +86,7 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
         x, y, width, height = overlay_info['x'], overlay_info['y'], overlay_info['width'], overlay_info['height']
     
     try:
+        font_size = overlay_info['font_size']
         font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.truetype("arial.ttf", font_size)
     except:
         font = ImageFont.load_default()
@@ -113,7 +114,7 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     print(f"Font size: {font_size}")
     print(f"Saved to: {output_path}")
 
-def process_images(input_dir, output_dir, font_path=None, font_size=20, exact_position=False):
+def process_images(input_dir, output_dir, font_path=None, exact_position=False):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     for filename in os.listdir(input_dir):
@@ -123,12 +124,12 @@ def process_images(input_dir, output_dir, font_path=None, font_size=20, exact_po
             overlay_info = find_gps_date_overlay(input_path)
             if overlay_info:
                 new_date_str = parse_and_adjust_date(overlay_info['date_str']) or "22/11/24 2:51 PM GMT +05:30"
-                update_image_overlay(input_path, output_path, overlay_info, new_date_str, font_path, font_size, exact_position)
+                update_image_overlay(input_path, output_path, overlay_info, new_date_str, font_path, exact_position)
                 print(f"Processed image: {filename}")
 
 def main():
     args = parse_args()
-    process_images(args.input_dir, args.output_dir, args.font_path, args.font_size, args.exact_position)
+    process_images(args.input_dir, args.output_dir, args.font_path, args.exact_position)
 
 if __name__ == "__main__":
     main()
