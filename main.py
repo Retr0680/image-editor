@@ -101,11 +101,15 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     draw.rectangle([x, y, x + width, y + height], fill=bg_color)
     
     # Adjust font size to fit the new text within the original text's bounding box
-    new_font_size = adjust_font_size(font_path, new_date_str, font_size, width)
+    new_font_size = adjust_font_size(font_path, new_date_str, width, font_size)
     font = ImageFont.truetype(font_path, new_font_size) if font_path else ImageFont.truetype("arial.ttf", new_font_size)
     
     # Draw the new date text
-    draw.text((x, y), new_date_str, font=font, fill=(255, 255, 255))
+    text_bbox = draw.textbbox((0, 0), new_date_str, font=font)
+    text_width = text_bbox[2] - text_bbox[0]
+    text_x = x + (width - text_width) / 2
+    text_y = y + (height - text_bbox[3] + text_bbox[1]) / 2  # Center vertically
+    draw.text((text_x, text_y), new_date_str, font=font, fill=(255, 255, 255))
     
     # Convert back to RGB mode before saving as JPEG
     image = image.convert("RGB")
@@ -117,7 +121,7 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     print(f"Font size: {new_font_size}")
     print(f"Saved to: {output_path}")
 
-def adjust_font_size(font_path, text, original_font_size, box_width):
+def adjust_font_size(font_path, text, box_width, original_font_size):
     """Adjust font size to fit text within a specified box width."""
     font = ImageFont.truetype(font_path, original_font_size) if font_path else ImageFont.truetype("arial.ttf", original_font_size)
     while font.getbbox(text)[2] > box_width and original_font_size > 1:
