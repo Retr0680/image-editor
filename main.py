@@ -105,7 +105,9 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     font = ImageFont.truetype(font_path, new_font_size) if font_path else ImageFont.truetype("arial.ttf", new_font_size)
     
     # Draw the new date text
-    draw.text((x, y), new_date_str, font=font, fill=(255, 255, 255))
+    text_width, text_height = draw.textsize(new_date_str, font=font)
+    text_x = x + (width - text_width) / 2
+    draw.text((text_x, y), new_date_str, font=font, fill=(255, 255, 255))
     
     # Convert back to RGB mode before saving as JPEG
     image = image.convert("RGB")
