@@ -1,3 +1,14 @@
+# ██▀███  ▓█████▄▄▄█████▓ ██▀███   ▒█████  
+#▓██ ▒ ██▒▓█   ▀▓  ██▒ ▓▒▓██ ▒ ██▒▒██▒  ██▒
+#▓██ ░▄█ ▒▒███  ▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒
+#▒██▀▀█▄  ▒▓█  ▄░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░
+#░██▓ ▒██▒░▒████▒ ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░
+#░ ▒▓ ░▒▓░░░ ▒░ ░ ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░ 
+#  ░▒ ░ ▒░ ░ ░  ░   ░      ░▒ ░ ▒░  ░ ▒ ▒░ 
+#  ░░   ░    ░    ░        ░░   ░ ░ ░ ░ ▒  
+#   ░        ░  ░           ░         ░ ░  
+                                          
+
 import os
 import re
 from datetime import datetime, timedelta
@@ -5,6 +16,17 @@ from PIL import Image, ImageDraw, ImageFont
 import pytesseract
 import argparse
 import numpy as np
+
+print(" ██▀███  ▓█████▄▄▄█████▓ ██▀███   ▒█████ ")  
+print("▓██ ▒ ██▒▓█   ▀▓  ██▒ ▓▒▓██ ▒ ██▒▒██▒  ██▒ ")
+print("▓██ ░▄█ ▒▒███  ▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒ ")
+print("▒██▀▀█▄  ▒▓█  ▄░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░ ")
+print("░██▓ ▒██▒░▒████▒ ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ")
+print("░ ▒▓ ░▒▓░░░ ▒░ ░ ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ")
+print("  ░▒ ░ ▒░ ░ ░  ░   ░      ░▒ ░ ▒░  ░ ▒ ▒░  ")
+print("  ░░   ░    ░    ░        ░░   ░ ░ ░ ░ ▒  ")
+print("   ░        ░  ░           ░         ░ ░  ")
+                                          
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Update GPS camera date overlay by adding 1 month, 1 day, and 1 hour')
