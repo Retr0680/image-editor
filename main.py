@@ -101,7 +101,7 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     overlay_draw = ImageDraw.Draw(overlay)
     
     # Draw a rectangle over the original text area to cover it with transparency
-    overlay_draw.rectangle([x, y, x + width, y + height], fill=(*bg_color, 128))
+    overlay_draw.rectangle([x, y, x + width, y + height], fill=(*bg_color, 255))
     
     # Draw the new date text on the overlay
     overlay_draw.text((x, y), new_date_str, font=font, fill=(255, 255, 255, 255))
