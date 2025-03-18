@@ -11,7 +11,6 @@ def parse_args():
     parser.add_argument('--input_dir', type=str, required=True, help='Input directory containing image files')
     parser.add_argument('--output_dir', type=str, required=True, help='Output directory to save processed images')
     parser.add_argument('--font_path', type=str, help='Path to font file for text rendering')
-    parser.add_argument('--font_size', type=int, default=20, help='Font size (default is 20)')
     parser.add_argument('--exact_position', action='store_true', help='Use exact position for date replacing')
     return parser.parse_args()
 
@@ -101,6 +100,10 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     # Draw a rectangle to cover the original text
     draw.rectangle([x, y, x + width, y + height], fill=bg_color)
     
+    # Adjust font size to fit the new text within the original text's bounding box
+    new_font_size = adjust_font_size(font_path, new_date_str, font_size, width)
+    font = ImageFont.truetype(font_path, new_font_size) if font_path else ImageFont.truetype("arial.ttf", new_font_size)
+    
     # Draw the new date text
     draw.text((x, y), new_date_str, font=font, fill=(255, 255, 255))
     
@@ -111,8 +114,16 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     print(f"Updated image: {image_path}")
     print(f"New date overlay: {new_date_str}")
     print(f"Overlay position: ({x}, {y}), size: ({width}, {height})")
-    print(f"Font size: {font_size}")
+    print(f"Font size: {new_font_size}")
     print(f"Saved to: {output_path}")
+
+def adjust_font_size(font_path, text, original_font_size, box_width):
+    """Adjust font size to fit text within a specified box width."""
+    font = ImageFont.truetype(font_path, original_font_size) if font_path else ImageFont.truetype("arial.ttf", original_font_size)
+    while font.getsize(text)[0] > box_width and original_font_size > 1:
+        original_font_size -= 1
+        font = ImageFont.truetype(font_path, original_font_size) if font_path else ImageFont.truetype("arial.ttf", original_font_size)
+    return original_font_size
 
 def process_images(input_dir, output_dir, font_path=None, exact_position=False):
     if not os.path.exists(output_dir):
