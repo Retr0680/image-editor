@@ -96,14 +96,17 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     
     # Adjust font size to fit the new text within the original text's bounding box
     font_size = overlay_info['font_size']
+    font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.truetype("arial.ttf", font_size)
+    
+    # Calculate the maximum font size that fits within the bounding box
     while True:
-        font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.truetype("arial.ttf", font_size)
         text_bbox = draw.textbbox((0, 0), new_date_str, font=font)
         text_width = text_bbox[2] - text_bbox[0]
         text_height = text_bbox[3] - text_bbox[1]
         if text_width <= width and text_height <= height:
             break
         font_size -= 1
+        font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.truetype("arial.ttf", font_size)
     
     # Center the new date text within the bounding box
     text_x = x + (width - text_width) / 2
