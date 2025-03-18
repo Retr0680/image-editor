@@ -126,7 +126,7 @@ def parse_and_adjust_date(date_str):
         try:
             day, month, year = map(int, date_str.split('/'))
             dt = datetime(year + 2000, month, day) + timedelta(days=1, months=1)
-            return f"{dt.day:02d}/{dt.month:02d}/{dt.year % 100:02d}"
+            return f"{dt.month:02d}/{dt.day:02d}/{dt.year % 100:02d}"
         except ValueError:
             pass
     elif re.match(r'\d{1,2}:\d{2}', date_str):
