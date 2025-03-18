@@ -108,7 +108,8 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     text_bbox = draw.textbbox((0, 0), new_date_str, font=font)
     text_width = text_bbox[2] - text_bbox[0]
     text_x = x + (width - text_width) / 2
-    draw.text((text_x, y), new_date_str, font=font, fill=(255, 255, 255))
+    text_y = y + (height - text_bbox[3] + text_bbox[1]) / 2  # Center vertically
+    draw.text((text_x, text_y), new_date_str, font=font, fill=(255, 255, 255))
     
     # Convert back to RGB mode before saving as JPEG
     image = image.convert("RGB")
