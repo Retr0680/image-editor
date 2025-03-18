@@ -1,6 +1,7 @@
 # 📸 Image Editor
 
 This script processes images to update the GPS camera date overlay by adding 1 month, 1 day, and 1 hour to the existing date.
+
 [![wakatime](https://wakatime.com/badge/user/6fce47e6-f384-4fb2-9ab4-d7ce4a048eb8/project/75cfb9b3-5b90-428c-8677-8bf0bdf0e300.svg)](https://wakatime.com/badge/user/6fce47e6-f384-4fb2-9ab4-d7ce4a048eb8/project/75cfb9b3-5b90-428c-8677-8bf0bdf0e300)
 
 ## 🚀 Features
