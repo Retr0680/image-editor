@@ -66,8 +66,8 @@ def sample_background_color(image, x, y, width, height):
     img_array = np.array(image)
     x, y, width, height = int(x), int(y), int(width), int(height)
     samples = []
-    if y > 5: samples.extend(img_array[y-5:y, x:x+width].reshape(-1, img_array.shape[2]))
-    if y + height + 5 < img_array.shape[0]: samples.extend(img_array[y+height:y+height+5, x:x+width].reshape(-1, img_array.shape[2]))
+    if y > 5: samples.extend(img_array[y-5:y, x:x+width].reshape(-1, 3))
+    if y + height + 5 < img_array.shape[0]: samples.extend(img_array[y+height:y+height+5, x:x+width].reshape(-1, 3))
     sample_tuples = [tuple(sample) for sample in samples]
     if sample_tuples:
         color_counts = {color: sample_tuples.count(color) for color in set(sample_tuples)}
@@ -99,11 +99,7 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     draw.rectangle([x, y, x + width, y + height], fill=bg_color)
     
     # Draw the new date text
-    text_bbox = draw.textbbox((0, 0), new_date_str, font=font)
-    text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
-    text_x = x + (width - text_width) / 2
-    text_y = y + (height - text_height) / 2
-    draw.text((text_x, text_y), new_date_str, font=font, fill=(255, 255, 255))
+    draw.text((x, y), new_date_str, font=font, fill=(255, 255, 255))
     
     # Convert back to RGB mode before saving as JPEG
     image = image.convert("RGB")
