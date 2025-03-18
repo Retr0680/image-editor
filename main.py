@@ -75,6 +75,19 @@ def sample_background_color(image, x, y, width, height):
         return max(color_counts.items(), key=lambda x: x[1])[0]
     return (0, 0, 0)
 
+def adjust_font_size(draw, font_path, text, box_width, box_height):
+    font_size = box_height
+    font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.truetype("arial.ttf", font_size)
+    while True:
+        text_bbox = draw.textbbox((0, 0), text, font=font)
+        text_width = text_bbox[2] - text_bbox[0]
+        text_height = text_bbox[3] - text_bbox[1]
+        if text_width <= box_width and text_height <= box_height:
+            break
+        font_size -= 1
+        font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.truetype("arial.ttf", font_size)
+    return font, text_width, text_height
+
 def update_image_overlay(image_path, output_path, overlay_info, new_date_str, font_path=None, exact_position=False):
     image = Image.open(image_path).convert("RGBA")
     draw = ImageDraw.Draw(image)
@@ -94,18 +107,9 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     # Draw a rectangle to cover the original text
     draw.rectangle([x, y, x + width, y + height], fill=bg_color)
     
-    # Calculate the maximum font size that fits within the bounding box
-    font_size = overlay_info['font_size']
-    font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.truetype("arial.ttf", font_size)
-    while True:
-        text_bbox = draw.textbbox((0, 0), new_date_str, font=font)
-        text_width = text_bbox[2] - text_bbox[0]
-        text_height = text_bbox[3] - text_bbox[1]
-        if text_width <= width and text_height <= height:
-            break
-        font_size -= 1
-        font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.truetype("arial.ttf", font_size)
-
+    # Adjust font size to fit the new text within the original text's bounding box
+    font, text_width, text_height = adjust_font_size(draw, font_path, new_date_str, width, height)
+    
     # Center the new date text within the bounding box
     text_x = x + (width - text_width) / 2
     text_y = y + (height - text_height) / 2
@@ -118,7 +122,7 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     print(f"Updated image: {image_path}")
     print(f"New date overlay: {new_date_str}")
     print(f"Overlay position: ({x}, {y}), size: ({width}, {height})")
-    print(f"Font size: {font_size}")
+    print(f"Font size: {font.size}")
     print(f"Saved to: {output_path}")
 
 def process_images(input_dir, output_dir, font_path=None, exact_position=False):
