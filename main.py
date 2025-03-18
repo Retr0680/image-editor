@@ -97,19 +97,11 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     if len(bg_color) == 4:
         bg_color = bg_color[:3]
     
-    # Create a mask for the text
-    text_mask = Image.new('L', (width, height), 0)
-    mask_draw = ImageDraw.Draw(text_mask)
-    mask_draw.text((0, 0), new_date_str, font=font, fill=255)
+    # Draw a rectangle to cover the original text
+    draw.rectangle([x, y, x + width, y + height], fill=bg_color)
     
-    # Create an image for the text with the sampled background color
-    text_image = Image.new('RGBA', (width, height), (*bg_color, 0))
-    text_draw = ImageDraw.Draw(text_image)
-    text_draw.text((0, 0), new_date_str, font=font, fill=(255, 255, 255, 255))
-    
-    # Composite the text image onto the original image using the mask
-    text_image_with_mask = Image.composite(text_image, image.crop((x, y, x + width, y + height)), text_mask)
-    image.paste(text_image_with_mask, (x, y))
+    # Draw the new date text
+    draw.text((x, y), new_date_str, font=font, fill=(255, 255, 255))
     
     # Convert back to RGB mode before saving as JPEG
     image = image.convert("RGB")
