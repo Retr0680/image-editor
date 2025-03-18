@@ -66,8 +66,8 @@ def sample_background_color(image, x, y, width, height):
     img_array = np.array(image)
     x, y, width, height = int(x), int(y), int(width), int(height)
     samples = []
-    if y > 5: samples.extend(img_array[y-5:y, x:x+width].reshape(-1, 3))
-    if y + height + 5 < img_array.shape[0]: samples.extend(img_array[y+height:y+height+5, x:x+width].reshape(-1, 3))
+    if y > 5: samples.extend(img_array[y-5:y, x:x+width].reshape(-1, img_array.shape[2]))
+    if y + height + 5 < img_array.shape[0]: samples.extend(img_array[y+height:y+height+5, x:x+width].reshape(-1, img_array.shape[2]))
     sample_tuples = [tuple(sample) for sample in samples]
     if sample_tuples:
         color_counts = {color: sample_tuples.count(color) for color in set(sample_tuples)}
@@ -92,7 +92,7 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     bg_color = sample_background_color(image, x, y, width, height)
     
     # Ensure bg_color is a tuple of three elements (RGB)
-    if len(bg_color) is 4:
+    if len(bg_color) == 4:
         bg_color = bg_color[:3]
     
     # Draw a rectangle to cover the original text
