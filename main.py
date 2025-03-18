@@ -1,13 +1,3 @@
-# ██▀███  ▓█████▄▄▄█████▓ ██▀███   ▒█████  
-#▓██ ▒ ██▒▓█   ▀▓  ██▒ ▓▒▓██ ▒ ██▒▒██▒  ██▒
-#▓██ ░▄█ ▒▒███  ▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒
-#▒██▀▀█▄  ▒▓█  ▄░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░
-#░██▓ ▒██▒░▒████▒ ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░
-#░ ▒▓ ░▒▓░░░ ▒░ ░ ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░ 
-#  ░▒ ░ ▒░ ░ ░  ░   ░      ░▒ ░ ▒░  ░ ▒ ▒░ 
-#  ░░   ░    ░    ░        ░░   ░ ░ ░ ░ ▒  
-#   ░        ░  ░           ░         ░ ░ 
-
 import os
 import re
 from datetime import datetime, timedelta
@@ -15,16 +5,6 @@ from PIL import Image, ImageDraw, ImageFont
 import pytesseract
 import argparse
 import numpy as np
-
-print(" ██▀███  ▓█████▄▄▄█████▓ ██▀███   ▒█████ ")  
-print("▓██ ▒ ██▒▓█   ▀▓  ██▒ ▓▒▓██ ▒ ██▒▒██▒  ██▒ ")
-print("▓██ ░▄█ ▒▒███  ▒ ▓██░ ▒░▓██ ░▄█ ▒▒██░  ██▒ ")
-print("▒██▀▀█▄  ▒▓█  ▄░ ▓██▓ ░ ▒██▀▀█▄  ▒██   ██░ ")
-print("░██▓ ▒██▒░▒████▒ ▒██▒ ░ ░██▓ ▒██▒░ ████▓▒░ ")
-print("░ ▒▓ ░▒▓░░░ ▒░ ░ ▒ ░░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ")
-print("  ░▒ ░ ▒░ ░ ░  ░   ░      ░▒ ░ ▒░  ░ ▒ ▒░  ")
-print("  ░░   ░    ░    ░        ░░   ░ ░ ░ ░ ▒  ")
-print("   ░        ░  ░           ░         ░ ░  ")
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Update GPS camera date overlay by adding 1 month, 1 day, and 1 hour')
@@ -114,11 +94,9 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     # Draw a rectangle to cover the original text
     draw.rectangle([x, y, x + width, y + height], fill=bg_color)
     
-    # Adjust font size to fit the new text within the original text's bounding box
+    # Calculate the maximum font size that fits within the bounding box
     font_size = overlay_info['font_size']
     font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.truetype("arial.ttf", font_size)
-    
-    # Calculate the maximum font size that fits within the bounding box
     while True:
         text_bbox = draw.textbbox((0, 0), new_date_str, font=font)
         text_width = text_bbox[2] - text_bbox[0]
@@ -127,7 +105,7 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
             break
         font_size -= 1
         font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.truetype("arial.ttf", font_size)
-    
+
     # Center the new date text within the bounding box
     text_x = x + (width - text_width) / 2
     text_y = y + (height - text_height) / 2
