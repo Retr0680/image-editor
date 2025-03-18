@@ -84,10 +84,6 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     else:
         x, y, width, height = overlay_info['x'], overlay_info['y'], overlay_info['width'], overlay_info['height']
     
-    # Estimate initial font size based on bounding box width
-    font_size = estimate_font_size(font_path, new_date_str, width)
-    font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.truetype("arial.ttf", font_size)
-    
     # Sample the background color around the text area
     bg_color = sample_background_color(image, x, y, width, height)
     
@@ -95,13 +91,19 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     if len(bg_color) == 4:
         bg_color = bg_color[:3]
     
-    # Measure text dimensions
-    text_bbox = draw.textbbox((0, 0), new_date_str, font=font)
-    text_width = text_bbox[2] - text_bbox[0]
-    text_height = text_bbox[3] - text_bbox[1]
-    
     # Draw a rectangle to cover the original text
     draw.rectangle([x, y, x + width, y + height], fill=bg_color)
+    
+    # Adjust font size to fit the new text within the original text's bounding box
+    font_size = overlay_info['font_size']
+    while True:
+        font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.truetype("arial.ttf", font_size)
+        text_bbox = draw.textbbox((0, 0), new_date_str, font=font)
+        text_width = text_bbox[2] - text_bbox[0]
+        text_height = text_bbox[3] - text_bbox[1]
+        if text_width <= width and text_height <= height:
+            break
+        font_size -= 1
     
     # Center the new date text within the bounding box
     text_x = x + (width - text_width) / 2
@@ -117,14 +119,6 @@ def update_image_overlay(image_path, output_path, overlay_info, new_date_str, fo
     print(f"Overlay position: ({x}, {y}), size: ({width}, {height})")
     print(f"Font size: {font_size}")
     print(f"Saved to: {output_path}")
-
-def estimate_font_size(font_path, text, box_width):
-    """Estimate font size to fit text within a specified box width."""
-    test_font_size = 100  # Start with a large font size
-    font = ImageFont.truetype(font_path, test_font_size) if font_path else ImageFont.truetype("arial.ttf", test_font_size)
-    text_width = font.getbbox(text)[2]
-    estimated_font_size = int(test_font_size * (box_width / text_width))
-    return estimated_font_size
 
 def process_images(input_dir, output_dir, font_path=None, exact_position=False):
     if not os.path.exists(output_dir):
